@@ -517,12 +517,12 @@
         // Logic: Edit & Delete
         editBtn.addEventListener('click', () => {
             console.log("[Todo Card] Edit clicked — Task ID: todo-001");
-            alert("✏️ Edit mode (demo): In production, this would open a modal to edit title, description, due date, etc.");
+            alert("Edit mode (demo): In production, this would open a modal to edit title, description, due date, etc.");
         });
 
         deleteBtn.addEventListener('click', () => {
             console.log("[Todo Card] Delete clicked — Task ID: todo-001");
-            const confirmed = confirm("⚠️ Delete this task? This action cannot be undone.");
+            const confirmed = confirm(" Delete this task? This action cannot be undone.");
             if (confirmed) {
                 alert(" Task deleted (demo). Card would be removed in production.");
                 // card.remove();
