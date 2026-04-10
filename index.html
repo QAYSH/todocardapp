@@ -479,4 +479,74 @@
                 }
             } else {
                 // Overdue
-     
+                if (days >= 1) {
+                    text = `Overdue by ${days} days`;
+                } else if (hours >= 1) {
+                    text = `Overdue by ${hours} hours`;
+                } else {
+                    text = `Overdue by ${minutes} minutes`;
+                }
+                colorClass = "overdue";
+            }
+
+            timeRemainingEl.textContent = text;
+            timeRemainingEl.className = `time-remaining ${colorClass}`;
+        }
+
+        // Logic: Toggle Complete
+        checkbox.addEventListener('change', (e) => {
+            const isChecked = e.target.checked;
+            
+            if (isChecked) {
+                titleEl.classList.add('completed');
+                descEl.classList.add('completed');
+                statusEl.classList.remove('pending');
+                statusEl.classList.add('done');
+                statusText.textContent = "Done";
+                statusEl.setAttribute('aria-label', 'Task status: Done');
+            } else {
+                titleEl.classList.remove('completed');
+                descEl.classList.remove('completed');
+                statusEl.classList.remove('done');
+                statusEl.classList.add('pending');
+                statusText.textContent = "Pending";
+                statusEl.setAttribute('aria-label', 'Task status: Pending');
+            }
+        });
+
+        // Logic: Edit & Delete
+        editBtn.addEventListener('click', () => {
+            console.log("[Todo Card] Edit clicked — Task ID: todo-001");
+            alert("✏️ Edit mode (demo): In production, this would open a modal to edit title, description, due date, etc.");
+        });
+
+        deleteBtn.addEventListener('click', () => {
+            console.log("[Todo Card] Delete clicked — Task ID: todo-001");
+            const confirmed = confirm("⚠️ Delete this task? This action cannot be undone.");
+            if (confirmed) {
+                alert(" Task deleted (demo). Card would be removed in production.");
+                // card.remove();
+            }
+        });
+
+        // Initialization
+        updateTimeRemaining();
+        setInterval(updateTimeRemaining, 35000);
+
+        // Console Verification Script
+        const requiredIds = [
+            'test-todo-card', 'test-todo-title', 'test-todo-description',
+            'test-todo-priority', 'test-todo-due-date', 'test-todo-time-remaining',
+            'test-todo-status', 'test-todo-complete-toggle', 'test-todo-tags',
+            'test-todo-tag-work', 'test-todo-tag-urgent', 'test-todo-edit-button',
+            'test-todo-delete-button'
+        ];
+
+        console.log("--- Automated Test Verification ---");
+        requiredIds.forEach(id => {
+            const el = document.querySelector(`[data-testid="${id}"]`);
+            console.log(`${id}: ${el ? '✅' : '❌'} ${el ? el.tagName : 'MISSING'}`);
+        });
+    </script>
+</body>
+</html>
