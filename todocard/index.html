@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>TaskFlow | Advanced Todo Card</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (Free CDN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <article class="task-card" data-testid="test-todo-card" data-priority="Medium" id="taskCard">
+        <div id="viewMode">
+            <div class="card__inner">
+                <!-- Header -->
+                <div class="card__header">
+                    <div class="card__title-wrapper">
+                        <h2 class="card__title" data-testid="test-todo-title" id="taskTitle">Review Q2 design system</h2>
+                    </div>
+                    <span class="priority-badge" data-testid="test-todo-priority" data-priority="Medium" id="priorityBadge">
+                        <i class="fas fa-flag"></i> Medium
+                    </span>
+                </div>
+
+                <!-- Description with Collapse -->
+                <div class="card__description-wrapper">
+                    <div class="collapse__container is-collapsed" id="collapsibleSection" data-testid="test-todo-collapsible-section">
+                        <p class="card__description" data-testid="test-todo-description" id="taskDescription">
+                            Comprehensive review of all Q2 design system components including buttons, modals, form elements, and typography. Need to align with brand guidelines and ensure accessibility compliance across all touchpoints. This review includes stakeholder sign-off and documentation updates.
+                        </p>
+                    </div>
+                    <button class="expand-toggle" data-testid="test-todo-expand-toggle" id="expandToggle" aria-expanded="false" aria-controls="collapsibleSection">
+                        <i class="fas fa-chevron-down"></i> Show full description
+                    </button>
+                </div>
+
+                <!-- Meta Info with Font Awesome Icons -->
+                <div class="card__meta">
+                    <div class="meta__item">
+                        <i class="far fa-calendar-alt"></i>
+                        <time class="meta__due-date" data-testid="test-todo-due-date" id="dueDate">Mar 20, 2026</time>
+                    </div>
+                    <div class="meta__item">
+                        <i class="far fa-clock"></i>
+                        <span class="time-remaining" data-testid="test-todo-time-remaining" id="timeRemaining" aria-live="polite">--</span>
+                    </div>
+                    <div class="meta__item" id="overdueWrapper" style="display: none;">
+                        <span class="overdue-badge" data-testid="test-todo-overdue-indicator">
+                            <i class="fas fa-exclamation-triangle"></i> Overdue
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Status Controls -->
+                <div class="card__status-area">
+                    <div class="status-control">
+                        <div class="status-control__label"><i class="fas fa-tasks"></i> Status</div>
+                        <select class="status-select" data-testid="test-todo-status-control" id="statusSelect" aria-label="Task status">
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Done">Done</option>
+                        </select>
+                    </div>
+                    <div class="checkbox-control">
+                        <input type="checkbox" id="completeToggle" data-testid="test-todo-complete-toggle">
+                        <label for="completeToggle"><i class="far fa-check-circle"></i> Mark complete</label>
+                    </div>
+                    <div class="status-badge" data-testid="test-todo-status" id="statusBadge" data-status="Pending">
+                        <i class="fas fa-hourglass-half"></i> Pending
+                    </div>
+                </div>
+
+                <!-- Tags with Font Awesome Icons -->
+                <div class="card__tags" data-testid="test-todo-tags">
+                    <span class="tag" data-testid="test-todo-tag-work"><i class="fas fa-briefcase"></i> Work</span>
+                    <span class="tag" data-testid="test-todo-tag-urgent"><i class="fas fa-exclamation-circle"></i> Urgent</span>
+                    <span class="tag"><i class="fas fa-palette"></i> Design</span>
+                </div>
+
+                <!-- Actions with Icons -->
+                <div class="card__actions">
+                    <button class="btn btn--secondary" data-testid="test-todo-edit-button" id="editBtn">
+                        <i class="fas fa-pen"></i> Edit task
+                    </button>
+                    <button class="btn btn--danger" data-testid="test-todo-delete-button" id="deleteBtn">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <script>
+        
+        // STATE MANAGEMENT
+        let taskState = {
+            title: "Review Q2 design system",
+            description: "Comprehensive review of all Q2 design system components including buttons, modals, form elements, and typography. Need to align with brand guidelines and ensure accessibility compliance across all touchpoints. This review includes stakeholder sign-off and documentation updates.",
+            priority: "Medium",
+            status: "Pending",
+            dueDate: new Date(2026, 2, 20, 18, 0, 0),
+        };
+
+        let originalState = { ...taskState };
+        let updateInterval = null;
+        let isExpanded = false;
+
+        // DOM Elements
+        const cardContainer = document.getElementById('taskCard');
+        const titleEl = document.getElementById('taskTitle');
+        const descEl = document.getElementById('taskDescription');
+        const priorityBadgeEl = document.getElementById('priorityBadge');
+        const dueDateEl = document.getElementById('dueDate');
+        const timeRemainingEl = document.getElementById('timeRemaining');
+        const overdueWrapper = document.getElementById('overdueWrapper');
+        const statusSelect = document.getElementById('statusSelect');
+        const completeToggle = document.getElementById('completeToggle');
+        const statusBadge = document.getElementById('statusBadge');
+        const editBtn = document.getElementById('editBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const expandToggle = document.getElementById('expandToggle');
+        const collapsibleSection = document.getElementById('collapsibleSection');
+
+        // Helper Functions
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function getTimeRemainingText() {
+            if (taskState.status === 'Done') {
+                return { text: "Completed ✓", isOverdue: false };
+            }
+
+            const now = new Date();
+            const diff = taskState.dueDate - now;
+            const isOverdue = diff < 0;
+
+            if (isOverdue) {
+                const absDiff = Math.abs(diff);
+                const days = Math.floor(absDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor(absDiff / (1000 * 60 * 60));
+                const minutes = Math.floor(absDiff / (1000 * 60));
+                
+                let text = "";
+                if (days > 0) text = `Overdue by ${days} day${days !== 1 ? 's' : ''}`;
+                else if (hours > 0) text = `Overdue by ${hours} hour${hours !== 1 ? 's' : ''}`;
+                else text = `Overdue by ${minutes} minute${minutes !== 1 ? 's' : ''}`;
+                
+                return { text, isOverdue: true };
+            } else {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor(diff / (1000 * 60));
+                
+                let text = "";
+                if (days > 1) text = `Due in ${days} days`;
+                else if (days === 1) text = `Due in 1 day`;
+                else if (hours > 0) text = `Due in ${hours} hour${hours !== 1 ? 's' : ''}`;
+                else if (minutes > 0) text = `Due in ${minutes} minute${minutes !== 1 ? 's' : ''}`;
+                else text = `Due now!`;
+                
+                return { text, isOverdue: false };
+            }
+        }
+
+        function updateTimeRemaining() {
+            const { text, isOverdue } = getTimeRemainingText();
+            timeRemainingEl.textContent = text;
+            
+            if (isOverdue && taskState.status !== 'Done') {
+                timeRemainingEl.classList.add('is-overdue');
+                overdueWrapper.style.display = 'flex';
+            } else {
+                timeRemainingEl.classList.remove('is-overdue');
+                overdueWrapper.style.display = 'none';
+            }
+        }
+
+        function updateStatusBadgeIcon() {
+            const iconMap = {
+                'Pending': '<i class="fas fa-hourglass-half"></i> Pending',
+                'In Progress': '<i class="fas fa-spinner fa-pulse"></i> In Progress',
+                'Done': '<i class="fas fa-check-circle"></i> Done'
+            };
+            statusBadge.innerHTML = iconMap[taskState.status] || iconMap['Pending'];
+            statusBadge.setAttribute('data-status', taskState.status);
+        }
+
+        function syncUI() {
+            titleEl.textContent = taskState.title;
+            descEl.textContent = taskState.description;
+            
+            // Update priority badge with icon
+            const priorityIcon = {
+                'Low': '<i class="fas fa-arrow-down"></i> Low',
+                'Medium': '<i class="fas fa-minus"></i> Medium',
+                'High': '<i class="fas fa-arrow-up"></i> High'
+            };
+            priorityBadgeEl.innerHTML = priorityIcon[taskState.priority];
+            priorityBadgeEl.setAttribute('data-priority', taskState.priority);
+            cardContainer.setAttribute('data-priority', taskState.priority);
+            
+            dueDateEl.textContent = formatDate(taskState.dueDate);
+            dueDateEl.setAttribute('datetime', taskState.dueDate.toISOString());
+            
+            statusSelect.value = taskState.status;
+            completeToggle.checked = (taskState.status === 'Done');
+            
+            updateStatusBadgeIcon();
+            
+            if (taskState.status === 'Done') {
+                titleEl.classList.add('is-completed');
+                descEl.classList.add('is-completed');
+            } else {
+                titleEl.classList.remove('is-completed');
+                descEl.classList.remove('is-completed');
+            }
+            
+            updateTimeRemaining();
+        }
+
+        function handleStatusChange(newStatus) {
+            taskState.status = newStatus;
+            syncUI();
+            saveToLocalStorage();
+        }
+
+        statusSelect.addEventListener('change', (e) => {
+            handleStatusChange(e.target.value);
+        });
+
+        completeToggle.addEventListener('change', (e) => {
+            const newStatus = e.target.checked ? 'Done' : 'Pending';
+            handleStatusChange(newStatus);
+        });
+
+        // Expand/Collapse
+        function updateCollapseState() {
+            if (isExpanded) {
+                collapsibleSection.style.maxHeight = collapsibleSection.scrollHeight + 'px';
+                collapsibleSection.classList.remove('is-collapsed');
+                expandToggle.innerHTML = '<i class="fas fa-chevron-up"></i> Show less';
+                expandToggle.setAttribute('aria-expanded', 'true');
+            } else {
+                collapsibleSection.style.maxHeight = '72px';
+                collapsibleSection.classList.add('is-collapsed');
+                expandToggle.innerHTML = '<i class="fas fa-chevron-down"></i> Show full description';
+                expandToggle.setAttribute('aria-expanded', 'false');
+            }
+        }
+
+        expandToggle.addEventListener('click', () => {
+            isExpanded = !isExpanded;
+            updateCollapseState();
+        });
+
+        setTimeout(() => {
+            collapsibleSection.style.maxHeight = '72px';
+        }, 10);
+
+        // Edit Mode
+        function escapeHtml(str) {
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function enterEditMode() {
+            originalState = JSON.parse(JSON.stringify(taskState));
+            
+            const viewModeDiv = document.getElementById('viewMode');
+            const editFormHtml = `
+                <div class="edit-form" data-testid="test-todo-edit-form" id="editForm">
+                    <div class="form__group">
+                        <label for="editTitle"><i class="fas fa-heading"></i> Task title</label>
+                        <input type="text" id="editTitle" data-testid="test-todo-edit-title-input" value="${escapeHtml(taskState.title)}">
+                    </div>
+                    <div class="form__group">
+                        <label for="editDesc"><i class="fas fa-align-left"></i> Description</label>
+                        <textarea id="editDesc" data-testid="test-todo-edit-description-input">${escapeHtml(taskState.description)}</textarea>
+                    </div>
+                    <div class="form__group">
+                        <label for="editPriority"><i class="fas fa-flag"></i> Priority level</label>
+                        <select id="editPriority" data-testid="test-todo-edit-priority-select">
+                            <option value="Low" ${taskState.priority === 'Low' ? 'selected' : ''}>Low</option>
+                            <option value="Medium" ${taskState.priority === 'Medium' ? 'selected' : ''}>Medium</option>
+                            <option value="High" ${taskState.priority === 'High' ? 'selected' : ''}>High</option>
+                        </select>
+                    </div>
+                    <div class="form__group">
+                        <label for="editDueDate"><i class="far fa-calendar-alt"></i> Due date</label>
+                        <input type="date" id="editDueDate" data-testid="test-todo-edit-due-date-input" value="${taskState.dueDate.toISOString().split('T')[0]}">
+                    </div>
+                    <div class="form__actions">
+                        <button class="btn btn--secondary" data-testid="test-todo-cancel-button" id="cancelEditBtn"><i class="fas fa-times"></i> Cancel</button>
+                        <button class="btn btn--primary" data-testid="test-todo-save-button" id="saveEditBtn"><i class="fas fa-save"></i> Save changes</button>
+                    </div>
+                </div>
+            `;
+            
+            viewModeDiv.style.display = 'none';
+            cardContainer.insertAdjacentHTML('beforeend', editFormHtml);
+            
+            const saveBtn = document.getElementById('saveEditBtn');
+            const cancelBtn = document.getElementById('cancelEditBtn');
+            const editTitle = document.getElementById('editTitle');
+            const editDesc = document.getElementById('editDesc');
+            const editPriority = document.getElementById('editPriority');
+            const editDueDate = document.getElementById('editDueDate');
+            
+            saveBtn.addEventListener('click', () => {
+                taskState.title = editTitle.value;
+                taskState.description = editDesc.value;
+                taskState.priority = editPriority.value;
+                taskState.dueDate = new Date(editDueDate.value + 'T18:00:00');
+                syncUI();
+                saveToLocalStorage();
+                exitEditMode();
+                editBtn.focus();
+            });
+            
+            cancelBtn.addEventListener('click', () => {
+                taskState = JSON.parse(JSON.stringify(originalState));
+                syncUI();
+                exitEditMode();
+                editBtn.focus();
+            });
+        }
+        
+        function exitEditMode() {
+            const editForm = document.getElementById('editForm');
+            if (editForm) editForm.remove();
+            document.getElementById('viewMode').style.display = 'block';
+        }
+        
+        editBtn.addEventListener('click', enterEditMode);
+        
+        // Delete Modal (Premium UX)...hehe
+        function showDeleteModal() {
+            const modalHtml = `
+                <div class="modal-overlay" id="deleteModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+                    <div class="modal-container">
+                        <div class="modal-header">
+                            <h3 id="modalTitle"><i class="fas fa-trash-alt"></i> Delete task?</h3>
+                        </div>
+                        <div class="modal-body">
+                            <p>Are you sure you want to delete "<strong>${escapeHtml(taskState.title)}</strong>"?</p>
+                            <p class="modal-warning"><i class="fas fa-exclamation-triangle"></i> This action cannot be undone.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn--secondary" id="modalCancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                            <button class="btn btn--danger" id="modalConfirmBtn"><i class="fas fa-trash-alt"></i> Delete permanently</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            const modal = document.getElementById('deleteModal');
+            const cancelBtn = document.getElementById('modalCancelBtn');
+            const confirmBtn = document.getElementById('modalConfirmBtn');
+            
+            confirmBtn.focus();
+            
+            function closeModal() {
+                modal.remove();
+                deleteBtn.focus();
+            }
+            
+            cancelBtn.addEventListener('click', closeModal);
+            confirmBtn.addEventListener('click', () => {
+                localStorage.removeItem('taskflow_data');
+                alert('Task deleted successfully');
+                location.reload();
+                closeModal();
+            });
+            
+            modal.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeModal();
+            });
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+        }
+        
+        deleteBtn.addEventListener('click', showDeleteModal);
+        
+        // Local Storage
+        function saveToLocalStorage() {
+            const toSave = {
+                ...taskState,
+                dueDate: taskState.dueDate.toISOString()
+            };
+            localStorage.setItem('taskflow_data', JSON.stringify(toSave));
+        }
+        
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('taskflow_data');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                taskState = {
+                    ...parsed,
+                    dueDate: new Date(parsed.dueDate)
+                };
+                syncUI();
+            }
+        }
+        
+        // Initialize
+        loadFromLocalStorage();
+        syncUI();
+        
+        updateInterval = setInterval(() => {
+            if (taskState.status !== 'Done') {
+                updateTimeRemaining();
+            }
+        }, 35000);
+        
+        // Console Verification
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('✓ Font Awesome Todo Card - Stage 1a');
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        
+        const testIds = [
+            'test-todo-card', 'test-todo-title', 'test-todo-description',
+            'test-todo-priority', 'test-todo-due-date', 'test-todo-time-remaining',
+            'test-todo-status', 'test-todo-complete-toggle', 'test-todo-tags',
+            'test-todo-tag-work', 'test-todo-tag-urgent', 'test-todo-edit-button',
+            'test-todo-delete-button', 'test-todo-edit-form', 'test-todo-edit-title-input',
+            'test-todo-edit-description-input', 'test-todo-edit-priority-select',
+            'test-todo-edit-due-date-input', 'test-todo-save-button', 'test-todo-cancel-button',
+            'test-todo-status-control', 'test-todo-expand-toggle', 'test-todo-collapsible-section',
+            'test-todo-overdue-indicator'
+        ];
+        
+        let passCount = 0;
+        testIds.forEach(id => {
+            const el = document.querySelector(`[data-testid="${id}"]`);
+            if (el) {
+                passCount++;
+                console.log(`${id}`);
+            } else {
+                console.log(`❌ ${id} - MISSING`);
+            }
+        });
+        console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+        console.log(`📊Result: ${passCount}/${testIds.length} test attributes found`);
+        console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+    </script>
+</body>
+</html>

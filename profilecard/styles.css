@@ -1,0 +1,282 @@
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: linear-gradient(145deg, #eef2f7 0%, #d4dfe9 100%);
+      font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
+
+    /* ----- CARD STYLES (responsive, accessible, modern) ----- */
+    .profile-card {
+      max-width: 1000px;
+      width: 100%;
+      background-color: #ffffff;
+      border-radius: 2rem;
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .profile-card:focus-within {
+      box-shadow: 0 24px 42px -12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* grid/flex hybrid for responsiveness */
+    .card-inner {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.8rem;
+      padding: 2rem 2rem 2rem 2rem;
+    }
+
+    /* AVATAR SECTION (left side on desktop) */
+    .avatar-section {
+      flex: 1;
+      min-width: 180px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    figure.avatar-figure {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .avatar-img {
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 4px solid #f0f4f9;
+      box-shadow: 0 12px 22px -10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.25s ease;
+      background: #f8fafc;
+    }
+
+    .avatar-img:hover {
+      transform: scale(1.02);
+    }
+
+    figcaption {
+      font-size: 0.85rem;
+      color: #4b5563;
+      font-style: italic;
+    }
+
+    /* MAIN INFO (right side) */
+    .info-section {
+      flex: 2.5;
+      min-width: 220px;
+    }
+
+    /* name + time row */
+    .name-time-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .profile-name {
+      font-size: 1.9rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #1f2b3c, #2c3e50);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
+
+    .time-epoch {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      background: #f1f5f9;
+      padding: 0.25rem 0.8rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #0f172a;
+      border: 1px solid #e2e8f0;
+      white-space: nowrap;
+    }
+
+    /* bio */
+    .user-bio {
+      margin: 0.8rem 0 1.2rem 0;
+      color: #1e293b;
+      border-left: 3px solid #3b82f6;
+      padding-left: 1rem;
+      font-size: 1rem;
+      background: #fafcff;
+      border-radius: 0 12px 12px 0;
+    }
+
+    /* lists layout: hobbies & dislikes */
+    .lists-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.8rem;
+      margin: 1.5rem 0 1.5rem 0;
+    }
+
+    .list-card {
+      flex: 1;
+      min-width: 140px;
+      background: #f9fafb;
+      border-radius: 1.25rem;
+      padding: 1rem 1.2rem;
+      transition: all 0.2s;
+    }
+
+    .list-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      border-bottom: 2px solid #cbd5e1;
+      display: inline-block;
+      padding-right: 0.5rem;
+    }
+
+    .list-card ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+
+    .list-card li {
+      padding: 0.35rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.95rem;
+      color: #0f172a;
+    }
+
+    /* Emoji inline for fun + clarity */
+    .list-card li::before {
+      content: "•";
+      color: #3b82f6;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .dislikes-section li::before {
+      content: "✗";
+      color: #e11d48;
+      font-weight: bold;
+    }
+
+    /* SOCIAL LINKS (nav) */
+    .social-wrapper {
+      margin-top: 0.5rem;
+    }
+
+    .social-wrapper h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: #1e293b;
+    }
+
+    .social-links-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      list-style: none;
+      padding: 0;
+    }
+
+    .social-links-list li {
+      margin: 0;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f1f5f9;
+      padding: 0.5rem 1rem;
+      border-radius: 60px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: #1e293b;
+      transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+      border: 1px solid #e2e8f0;
+    }
+
+    .social-link:hover,
+    .social-link:focus {
+      background: #e2e8f0;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    .social-link:focus-visible {
+      outline: 3px solid #2563eb;
+      outline-offset: 2px;
+    }
+
+    /* responsive adjustments */
+    @media (max-width: 720px) {
+      .card-inner {
+        flex-direction: column;
+        padding: 1.5rem;
+      }
+      .avatar-section {
+        justify-content: center;
+      }
+      .name-time-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .time-epoch {
+        white-space: normal;
+        word-break: break-all;
+      }
+      .profile-name {
+        font-size: 1.7rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 0.8rem;
+      }
+      .card-inner {
+        padding: 1.2rem;
+      }
+      .avatar-img {
+        width: 120px;
+        height: 120px;
+      }
+      .list-card {
+        padding: 0.8rem;
+      }
+    }
+
+    /* keyboard focus ring globally */
+    :focus-visible {
+      outline: 3px solid #2563eb;
+      outline-offset: 3px;
+    }
+
+    /* ensure all interactive are tabbable */
+    a, button, [tabindex="0"] {
+      transition: outline 0.1s ease;
+    }
+  

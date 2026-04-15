@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Frontend Wizard | Profile Card</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+
+  <article class="profile-card" data-testid="test-profile-card" aria-label="User profile card">
+    <div class="card-inner">
+      
+      <!-- AVATAR SECTION (figure + img + figcaption) -->
+      <div class="avatar-section">
+        <figure class="avatar-figure">
+          <img class="avatar-img" 
+               src="./picture.jpg" 
+               alt="Portrait my AI generated handsome face....hehe"
+               data-testid="test-user-avatar"
+               loading="eager">
+          <figcaption>Profile photo</figcaption>
+        </figure>
+      </div>
+
+      <!-- MAIN INFO area -->
+      <div class="info-section">
+       
+        <div class="name-time-row">
+          <h2 class="profile-name" data-testid="test-user-name" aria-label="Full name">QAIS SHITTU</h2>
+          <div class="time-epoch" data-testid="test-user-time" aria-live="polite" aria-label="Current epoch time in milliseconds">
+            0
+          </div>
+        </div>
+
+        <!-- Short bio paragraph -->
+        <p class="user-bio" data-testid="test-user-bio">
+          Frontend architect & creative coder. Passionate about accessible UI, design systems, and baking sourdough. 
+          Building inclusive web experiences for over 50+ companies.
+
+          <!-- Na lie ohh....hehe :bayi: -->
+        </p>
+
+        
+        <div class="lists-grid">
+          <!-- HOBBIES section -->
+          <section class="list-card" aria-labelledby="hobbies-heading">
+            <h3 id="hobbies-heading">Hobbies</h3>
+            <ul data-testid="test-user-hobbies">
+              <li>Open-source contribution</li>
+              <li>Illustration & sketching</li>
+              <li>Hiking & photography</li>
+              <li>Playing football</li>
+            </ul>
+
+            <!-- My hobbies are actually coding, learning new tech, and exploring design trends.I'm just kidding.......I like sleeping  -->
+          </section>
+
+          <!-- DISLIKES section -->
+          <section class="list-card" aria-labelledby="dislikes-heading">
+            <h3 id="dislikes-heading">Dislikes</h3>
+            <ul data-testid="test-user-dislikes">
+              <li>Inconsistent dark mode</li>
+              <li>Pop-up ads that shift layout</li>
+              <li>Slow CI pipelines</li>
+              <li>Unlabeled form fields</li>
+            </ul>
+            <!-- Not my dislikes but I just put some random ones for the sake of having a list there. haha -->
+          </section>
+        </div>
+
+        <!-- SOCIAL LINKS  -->
+        <div class="social-wrapper">
+          <h3>Connect</h3>
+          <nav aria-label="Social media links">
+            <ul class="social-links-list" data-testid="test-user-social-links">
+              <li>
+                <a class="social-link" 
+                   data-testid="test-user-social-twitter"
+                   href="https://twitter.com/qaysh001" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   aria-label="Twitter (opens in new tab)">
+                   <i class="fab fa-twitter"></i>
+                Twitter
+                </a>
+              </li>
+              <li>
+                <a class="social-link" 
+                   data-testid="test-user-social-github"
+                   href="https://github.com/qaysh" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   aria-label="GitHub (opens in new tab)">
+                   <i class="fab fa-github"></i>
+                 GitHub
+                </a>
+              </li>
+              <li>
+                <a class="social-link" 
+                   data-testid="test-user-social-linkedin"
+                   href="https://linkedin.com/" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   aria-label="LinkedIn (opens in new tab)">
+                   <i class="fab fa-linkedin"></i>
+                   LinkedIn
+                </a>
+                <!-- I don't have LinkedIn account but it's there for formality! -->
+              </li>
+              <li>
+                <a class="social-link" 
+                   data-testid="test-user-social-mastodon"
+                   href="https://www.instagram.com/the_swaniqs_guy" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   aria-label="Mastodon (opens in new tab)">
+                   <i class="fab fa-instagram"></i>
+                 Instagram
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <script>
+    (function() {
+      // --- EPOCH TIME (milliseconds) component: live accurate Date.now()
+
+      
+      const timeElement = document.querySelector('[data-testid="test-user-time"]');
+      
+      // Helper to update the epoch milliseconds content
+      function updateEpochTime() {
+        if (timeElement) {
+          const now = Date.now();
+          // Format with thousands separator for readability, but preserve numeric value
+          timeElement.textContent = now.toString();
+         
+        }
+      }
+      
+      // initial render exactly as soon as script loads (reflects current ms)
+      updateEpochTime();
+      
+      setInterval(() => {
+        updateEpochTime();
+      }, 1000);
+      
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+          updateEpochTime();
+        }
+      });
+      
+      console.log("Profile card ready: includes all data-testid, semantic HTML, responsive layout, epoch time updates.");
+ 
+      if (typeof window !== 'undefined') {
+        const requiredTestIds = [
+          'test-profile-card', 'test-user-name', 'test-user-bio', 'test-user-time',
+          'test-user-avatar', 'test-user-social-links', 'test-user-hobbies', 'test-user-dislikes'
+        ];
+        const missing = requiredTestIds.filter(id => !document.querySelector(`[data-testid="${id}"]`));
+        if (missing.length) {
+          console.warn('Missing data-testid elements:', missing);
+        } else {
+          console.log(' All required data-testid elements are present.');
+        }
+        
+        const socialTwitter = document.querySelector('[data-testid="test-user-social-twitter"]');
+        const socialGithub = document.querySelector('[data-testid="test-user-social-github"]');
+        const socialLinkedin = document.querySelector('[data-testid="test-user-social-linkedin"]');
+        if (socialTwitter && socialGithub && socialLinkedin) {
+          console.log('Extended social testids are present.');
+        }
+      }
+    })();
+    // I enjoy writing comment for my code because it helps me clarify my thoughts and makes it easier for others (or myself in the future) to understand the purpose and functionality of different parts of the code. It also serves as documentation that can explain why certain decisions were made, which can be invaluable when revisiting the code after some time has passed. All this english.....na just cruise sha
+  </script>
+</body>
+</html>
